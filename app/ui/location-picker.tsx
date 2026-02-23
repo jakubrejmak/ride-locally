@@ -1,36 +1,56 @@
 "use client";
 
-import { useStopsCloseby } from "../hooks/use-stops-closeby";
+import {
+  Combobox,
+  ComboboxInput,
+  ComboboxContent,
+  ComboboxList,
+  ComboboxItem,
+  ComboboxEmpty,
+} from "@/components/ui/combobox";
+
+export type LocationItem = {
+  id: number;
+  label: string;
+}
 
 type LocationPickerProps = {
-    id: string;
-    label: string;
-    placeholder?: string;
+  id: string;
+  label: string;
+  placeholder?: string;
+  locations?: { locationList: LocationItem[]; loading: boolean | null; error: Error | null };
 };
 
 export default function LocationPicker({
-    id,
-    label,
-    placeholder = "Select a location",
+  id,
+  label,
+  placeholder = "Select a location",
+  locations = { locationList: [], loading: false, error: null },
 }: LocationPickerProps) {
-    const {location, stops} = useStopsCloseby()
+  const {locationList, loading, error} = locations;
 
-    return (
-        <div className="flex flex-col gap-1.5">
-            <label
-                htmlFor={id}
-                className="text-sm font-medium text-zinc-900 dark:text-zinc-100"
+  return (
+    <Combobox>
+      <label htmlFor={id}>{label}</label>
+      <ComboboxInput
+        id={id}
+        placeholder={placeholder}
+      />
+      <ComboboxContent>
+        <ComboboxList>
+          {loading && <p className='p-2 text-sm'>Loading...</p>}
+          {error && <p className='p-2 text-sm'>{error.message}</p>}
+          {locationList.map((item) => (
+            <ComboboxItem
+              key={item.id}
+              value={String(item.id)}
             >
-                {label}
-            </label>
-            <input
-                type="text"
-                id={id}
-                name={id}
-                placeholder={placeholder}
-                autoComplete="off"
-                className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus:border-zinc-400 dark:focus:ring-zinc-400"
-            />
-        </div>
-    );
+              {item.label}
+            </ComboboxItem>
+          ))}
+          <ComboboxEmpty>No stops found.</ComboboxEmpty>
+        </ComboboxList>
+      </ComboboxContent>
+    </Combobox>
+  );
 }

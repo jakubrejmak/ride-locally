@@ -4,12 +4,26 @@ import {
     pgTable,
     varchar,
     customType,
+    timestamp,
+    boolean,
+    date,
 } from "drizzle-orm/pg-core";
 import { time } from "drizzle-orm/pg-core";
 
-export const holidayBehaviorEnum = pgEnum("holiday_behavior", [
-    "rides_normally",
-    "does_not_ride",
+export const routeTypeEnum = pgEnum("route_type", [
+    "bus",
+    "tram",
+    "rail",
+    "subway",
+    "ferry",
+    "cable_car",
+    "gondola",
+    "funicular",
+]);
+
+export const exceptionTypeEnum = pgEnum("exception_type", [
+    "added",
+    "removed",
 ]);
 
 export const geographyPoint = customType<{ data: unknown }>({
@@ -24,6 +38,8 @@ export const carriersTable = pgTable("carriers", {
     homepage: varchar(),
     contact_phone: varchar({ length: 20 }),
     contact_email: varchar({ length: 255 }),
+    timezone: varchar({ length: 64 }).notNull(),
+    country: varchar({ length: 2 }).notNull(),
 });
 
 export const routesTable = pgTable("routes", {
@@ -31,6 +47,12 @@ export const routesTable = pgTable("routes", {
     carrier_id: integer()
         .references(() => carriersTable.id)
         .notNull(),
+    short_name: varchar({ length: 50 }).notNull(),
+    long_name: varchar({ length: 255 }),
+    description: varchar(),
+    route_type: routeTypeEnum("route_type").notNull(),
+    color: varchar({ length: 6 }),
+    text_color: varchar({ length: 6 }),
     origin_stop: integer()
         .references(() => stopsTable.id)
         .notNull(),
@@ -39,16 +61,47 @@ export const routesTable = pgTable("routes", {
         .notNull(),
 });
 
+export const calendarTable = pgTable("calendar", {
+    id: integer().primaryKey().generatedAlwaysAsIdentity(),
+    monday: boolean().notNull().default(false),
+    tuesday: boolean().notNull().default(false),
+    wednesday: boolean().notNull().default(false),
+    thursday: boolean().notNull().default(false),
+    friday: boolean().notNull().default(false),
+    saturday: boolean().notNull().default(false),
+    sunday: boolean().notNull().default(false),
+    start_date: date().notNull(),
+    end_date: date().notNull(),
+});
+
+export const calendarDatesTable = pgTable("calendar_dates", {
+    id: integer().primaryKey().generatedAlwaysAsIdentity(),
+    calendar_id: integer()
+        .references(() => calendarTable.id)
+        .notNull(),
+    date: date().notNull(),
+    exception_type: exceptionTypeEnum("exception_type").notNull(),
+});
+
 export const tripsTable = pgTable("trips", {
     id: integer().primaryKey().generatedAlwaysAsIdentity(),
-    route_id: integer().references(() => routesTable.id),
-    price: integer(),
-    currency: varchar({ length: 3 }),
+    route_id: integer()
+        .references(() => routesTable.id)
+        .notNull(),
+    calendar_id: integer()
+        .references(() => calendarTable.id)
+        .notNull(),
     duration: integer(),
     distance: integer(),
-    holiday_behavior: holidayBehaviorEnum("holiday_behavior")
-        .notNull()
-        .default("rides_normally"),
+});
+
+export const fareAttributesTable = pgTable("fare_attributes", {
+    id: integer().primaryKey().generatedAlwaysAsIdentity(),
+    route_id: integer()
+        .references(() => routesTable.id)
+        .notNull(),
+    price: integer().notNull(),
+    currency: varchar({ length: 3 }).notNull(),
 });
 
 export const stopsTable = pgTable("stops", {
@@ -59,9 +112,21 @@ export const stopsTable = pgTable("stops", {
 
 export const tripStopsTable = pgTable("trip_stops", {
     id: integer().primaryKey().generatedAlwaysAsIdentity(),
-    trip_id: integer().references(() => tripsTable.id),
-    stop_id: integer().references(() => stopsTable.id),
+    trip_id: integer()
+        .references(() => tripsTable.id)
+        .notNull(),
+    stop_id: integer()
+        .references(() => stopsTable.id)
+        .notNull(),
     stop_order: integer().notNull(),
     arrival_time: time().notNull(),
     departure_time: time().notNull(),
+});
+
+export const stopsMetrics = pgTable("stops_metrics", {
+    id: integer().primaryKey().generatedAlwaysAsIdentity(),
+    stop_id: integer()
+        .references(() => stopsTable.id)
+        .notNull(),
+    click_time: timestamp().notNull(),
 });

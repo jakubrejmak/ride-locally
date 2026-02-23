@@ -1,19 +1,19 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { InferSelectModel } from "drizzle-orm";
-import { getStopsCloseby } from "@/app/data/queries";
 import { stopsTable } from "@/app/db/schema";
+import { getStopsPopular } from "@/app/data/queries";
 import type { NavigatorLoc } from "@/app/lib/geo";
 
 type Stop = InferSelectModel<typeof stopsTable>;
 
-export default function useStopsCloseby(location: NavigatorLoc | null) {
+export default function useStopsPopular(location: NavigatorLoc | null) {
   const [stops, setStops] = useState<Stop[] | null>(null);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     if (!location) return;
     let ignore = false;
-    getStopsCloseby(location)
+    getStopsPopular(location)
       .then((sto) => {
         if (!ignore) setStops(sto);
       })
