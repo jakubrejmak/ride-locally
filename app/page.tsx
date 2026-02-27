@@ -1,4 +1,4 @@
-import RouteSearch from "@/app/ui/route-search";
+import RouteSearch from "@/app/ui/trip-search";
 
 export default function Home() {
   return (
