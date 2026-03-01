@@ -17,7 +17,7 @@ import { ThemeSwitcher } from "@/app/ui/theme-switcher";
 
 export default function MenuDrawer({ children }: { children: ReactNode }) {
   return (
-    <Drawer>
+    <Drawer onOpenChange={(open) => { if (open) (document.activeElement as HTMLElement)?.blur(); }}>
       <DrawerTrigger asChild>{children}</DrawerTrigger>
       <DrawerContent>
         <div className='mx-auto w-full max-w-sm'>
