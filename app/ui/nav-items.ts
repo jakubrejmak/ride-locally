@@ -4,28 +4,26 @@ import {
   BookOpen,
   Info,
   UserRoundKey,
-  SunMoon,
 } from "lucide-react";
 
-export const navItems = [
+export const navLinks = [
   { label: "Home", href: "/", icon: Home },
   { label: "Schedules", href: "/schedules", icon: Calendar },
   { label: "Blog", href: "/posts", icon: BookOpen },
   { label: "About", href: "/about", icon: Info },
 ];
 
-export const mobileNavItems = [
+export const mobileNavLinks = [
   { label: "Home", href: "/", icon: Home },
   { label: "Schedules", href: "/schedules", icon: Calendar },
   { label: "Blog", href: "/posts", icon: BookOpen },
 ];
 
-export const menuItems = [
+export const menuLinks = [
   { label: "Log In", href: "/login", icon: UserRoundKey },
-  { label: "Switch theme", href: "", icon: SunMoon },
 ];
 
-export const footerItems = [
+export const footerLinks = [
   { label: "Privacy Policy", href: "/privacy" },
   { label: "Terms of Service", href: "/terms" },
   { label: "Contact", href: "/contact" },

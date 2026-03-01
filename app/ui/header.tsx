@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Honk } from "next/font/google";
-import { navItems } from "@/app/ui/nav-items";
+import { navLinks } from "@/app/ui/nav-items";
 
 const honk = Honk({ subsets: ["latin"] });
 
@@ -23,7 +23,7 @@ export default function Header() {
             className='flex items-center gap-6'
             role='list'
           >
-            {navItems.map((item) => (
+            {navLinks.map((item) => (
               <li key={item.href}>
                 <Link
                   href={item.href}

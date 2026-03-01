@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { footerItems } from "@/app/ui/nav-items";
+import { footerLinks } from "@/app/ui/nav-items";
 
 export default function Footer() {
   return (
     <footer className="pb-20 sm:pb-0 border-t border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
       <div className="mx-auto max-w-3xl px-4 py-8">
         <nav aria-label="Footer navigation" className="flex flex-wrap gap-x-6 gap-y-2">
-          {footerItems.map((item) => (
+          {footerLinks.map((item) => (
             <Link
               key={item.href}
               href={item.href}

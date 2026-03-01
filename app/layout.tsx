@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "./ui/header";
 import Footer from "./ui/footer";
 import MobileNavbar from "./ui/mobile-navbar";
+import Providers from "./providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,14 +27,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang='en'>
+    <html lang='en' suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Header />
-        {children}
-        <MobileNavbar />
-        <Footer />
+        <Providers>
+          <Header />
+          {children}
+          <MobileNavbar />
+          <Footer />
+        </Providers>
       </body>
     </html>
   );
