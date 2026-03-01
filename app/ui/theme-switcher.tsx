@@ -13,9 +13,14 @@ const themes = ["light", "dark", "system"] as const;
 type ThemeSwitcherProps = {
   label: string;
   themeLabels: string[];
+  className: string;
 };
 
-export function ThemeSwitcher({ label, themeLabels }: ThemeSwitcherProps) {
+export function ThemeSwitcher({
+  label,
+  themeLabels,
+  className,
+}: ThemeSwitcherProps) {
   const { theme, setTheme } = useTheme();
 
   return (
@@ -27,9 +32,7 @@ export function ThemeSwitcher({ label, themeLabels }: ThemeSwitcherProps) {
         value='theme'
         className='border-b-0'
       >
-        <AccordionTrigger className='text-base cursor-pointer items-center gap-1 justify-center py-0 font-medium text-zinc-600 transition-colors hover:text-zinc-900 hover:no-underline dark:text-zinc-400 dark:hover:text-zinc-50'>
-          {label}
-        </AccordionTrigger>
+        <AccordionTrigger className={className}>{label}</AccordionTrigger>
         <AccordionContent className='pb-0 pt-2'>
           <div className='flex flex-col items-center gap-1'>
             {themes.map((t, i) => (

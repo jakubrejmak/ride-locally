@@ -3,14 +3,14 @@ import TripSearch from "@/app/ui/trip-search";
 
 export default function Home() {
   return (
-    <div className='flex flex-col items-center bg-zinc-50 font-sans dark:bg-black'>
+    <div className='flex sm:min-h-screen flex-col items-center bg-zinc-50 font-sans dark:bg-black'>
       <div className='relative w-full max-w-3xl'>
         <div className='relative h-48 w-full overflow-hidden sm:h-64'>
           <Image
             src='/intersection_day.jpg'
             alt='City intersection'
             fill
-            priority
+            loading="lazy"
             sizes='(max-width: 768px) 100vw, 768px'
             className='object-cover dark:hidden'
           />
@@ -18,7 +18,7 @@ export default function Home() {
             src='/intersection_night.jpg'
             alt='City intersection at night'
             fill
-            priority
+            loading="lazy"
             sizes='(max-width: 768px) 100vw, 768px'
             className='hidden object-cover dark:block'
           />

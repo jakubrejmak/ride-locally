@@ -24,12 +24,13 @@ export function MenuPopover() {
             <Link
               key={item.href}
               href={item.href}
-              className='rounded-md px-2 py-1.5 text-center text-sm text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-50'
+              className='rounded-md font-medium px-2 py-1.5 text-center text-sm text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-50'
             >
               {item.label}
             </Link>
           ))}
           <ThemeSwitcher
+            className='text-sm cursor-pointer items-center gap-1 justify-center py-0 font-medium text-zinc-600 transition-colors hover:text-zinc-900 hover:no-underline dark:text-zinc-400 dark:hover:text-zinc-50'
             label='Motyw'
             themeLabels={["Jasny", "Ciemny", "System"]}
           />

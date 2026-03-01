@@ -39,6 +39,7 @@ export default function MenuDrawer({ children }: { children: ReactNode }) {
             ))}
             <li className='w-full'>
               <ThemeSwitcher
+                className='text-base cursor-pointer items-center gap-1 justify-center py-0 font-medium text-zinc-600 transition-colors hover:text-zinc-900 hover:no-underline dark:text-zinc-400 dark:hover:text-zinc-50'
                 label='Motyw'
                 themeLabels={["Jasny", "Ciemny", "System"]}
               />
