@@ -33,7 +33,7 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <main className='mb-8 w-full max-w-3xl px-4 sm:px-16'>
+      <main className='pb-8 w-full max-w-3xl px-4 sm:px-16'>
         <TripSearch />
       </main>
     </div>

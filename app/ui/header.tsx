@@ -1,19 +1,21 @@
 import Link from "next/link";
-import { Honk } from "next/font/google";
+import Image from "next/image";
 import { navLinks } from "@/app/ui/nav-items";
 import { MenuPopover } from "@/app/ui/menu-popover";
-
-const honk = Honk({ subsets: ["latin"] });
 
 export default function Header() {
   return (
     <header className='sticky top-0 z-20 border-b border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950'>
       <div className='mx-auto flex max-w-3xl items-center justify-between px-4 py-4'>
-        <Link
-          href='/'
-          className={`text-4xl tracking-tight text-zinc-900 dark:text-zinc-50 ${honk.className}`}
-        >
-          jade24.pl
+        <Link href='/'>
+          <Image
+            src='/logo_rect.svg'
+            alt='jade24.pl'
+            width={120}
+            height={40}
+            priority
+            className='dark:invert'
+          />
         </Link>
 
         <nav

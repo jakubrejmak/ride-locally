@@ -19,6 +19,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "jade24.pl",
   description: "Zawsze najbardziej aktualne dane o lokalnych przejazdach!",
+  appleWebApp: {
+    title: "Jade24",
+  },
 };
 
 export default function RootLayout({
