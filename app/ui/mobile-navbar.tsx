@@ -9,7 +9,7 @@ export default function MobileNavbar() {
           <li key={item.href}>
             <Link
               href={item.href}
-              className='flex flex-col items-center gap-1'
+              className='flex flex-col items-center gap-1 transition-transform duration-150 active:scale-110 active:-translate-y-1'
             >
               <item.icon size={20} />
               <span className='text-[10px]'>{item.label}</span>
