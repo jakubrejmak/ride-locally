@@ -35,8 +35,9 @@ export default function TimePicker({
   const locale = useLocale();
   const [mode, setMode] = useState(modes[0].value);
   const [time, setTime] = useState(() => {
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
     const now = new Date();
-    return now.toLocaleTimeString(locale.code, { hour: "2-digit", minute: "2-digit", hour12: false });
+    return now.toLocaleTimeString(locale.code, { timeZone:timezone, hour: "2-digit", minute: "2-digit", hour12: false });
   });
 
   const activeMode = modes.find((m) => m.value === mode) ?? modes[0];
