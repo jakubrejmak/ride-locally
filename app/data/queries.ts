@@ -16,8 +16,8 @@ export async function getStopsNearby(
 
   const q = sql`
     SELECT * FROM stops
-    WHERE ST_DWithin(location, ${point}, ${withinMeters})
-    ORDER BY location <-> ${point}
+    WHERE ST_DWithin(coordinates, ${point}, ${withinMeters})
+    ORDER BY coordinates <-> ${point}
     LIMIT ${limit}`;
 
   const result = await db.execute<Stop>(q);
@@ -33,12 +33,12 @@ export async function getStopsPopular(
   const point = sql`ST_SetSRID(ST_MakePoint(${location.longitude}, ${location.latitude}), 4326)::geography`;
 
   const q = sql`
-    SELECT s.id, s.name, s.location
+    SELECT s.id, s.name, s.coordinates
     FROM stops s
     LEFT JOIN stops_metrics sm ON sm.stop_id = s.id
-    WHERE ST_DWithin(s.location, ${point}, ${withinMeters})
+    WHERE ST_DWithin(s.coordinates, ${point}, ${withinMeters})
     GROUP BY s.id
-    ORDER BY COUNT(sm.id) DESC, s.location <-> ${point}
+    ORDER BY COUNT(sm.id) DESC, s.coordinates <-> ${point}
     LIMIT ${limit}`;
 
   const result = await db.execute<Stop>(q);
@@ -56,10 +56,10 @@ export async function getAddressesNearby(
   const point = sql`ST_SetSRID(ST_MakePoint(${location.longitude}, ${location.latitude}), 4326)::geography`;
 
   const q = sql`
-    SELECT id, display_name, street, house_number, city, postcode, country, location
+    SELECT id, display_name, street, house_number, city, postcode, country, coordinates
     FROM addresses
-    WHERE ST_DWithin(location, ${point}, ${withinMeters})
-    ORDER BY location <-> ${point}
+    WHERE ST_DWithin(coordinates, ${point}, ${withinMeters})
+    ORDER BY coordinates <-> ${point}
     LIMIT ${limit}`;
 
   const result = await db.execute<Address>(q);
@@ -74,12 +74,12 @@ export async function getAddressesPopular(
   const point = sql`ST_SetSRID(ST_MakePoint(${location.longitude}, ${location.latitude}), 4326)::geography`;
 
   const q = sql`
-    SELECT a.id, a.display_name, a.street, a.house_number, a.city, a.postcode, a.country, a.location
+    SELECT a.id, a.display_name, a.street, a.house_number, a.city, a.postcode, a.country, a.coordinates
     FROM addresses a
     LEFT JOIN addresses_metrics am ON am.address_id = a.id
-    WHERE ST_DWithin(a.location, ${point}, ${withinMeters})
+    WHERE ST_DWithin(a.coordinates, ${point}, ${withinMeters})
     GROUP BY a.id
-    ORDER BY COUNT(am.id) DESC, a.location <-> ${point}
+    ORDER BY COUNT(am.id) DESC, a.coordinates <-> ${point}
     LIMIT ${limit}`;
 
   const result = await db.execute<Address>(q);
@@ -91,7 +91,7 @@ export async function searchStops(
   limit: number = 10,
 ): Promise<Stop[]> {
   const q = sql`
-    SELECT s.id, s.name, s.location
+    SELECT id, name, coordinates
     FROM stops
     LIMIT ${limit}`;
 
@@ -105,7 +105,7 @@ export async function searchAddresses(
   limit: number = 10,
 ): Promise<Address[]> {
   const q = sql`
-    SELECT id, display_name, street, house_number, city, postcode, country, location
+    SELECT id, display_name, street, house_number, city, postcode, country, coordinates
     FROM addresses
     LIMIT ${limit}`;
 

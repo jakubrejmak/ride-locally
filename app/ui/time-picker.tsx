@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useLocale } from "@/app/locale-context";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,13 +31,8 @@ export default function TimePicker({
   modes,
   name,
 }: TimePickerProps) {
-  const locale = useLocale();
   const [mode, setMode] = useState(modes[0].value);
-  const [time, setTime] = useState(() => {
-    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
-    const now = new Date();
-    return now.toLocaleTimeString(locale.code, { timeZone:timezone, hour: "2-digit", minute: "2-digit", hour12: false });
-  });
+  const [time, setTime] = useState("12:00");
 
   const activeMode = modes.find((m) => m.value === mode) ?? modes[0];
   const buttonLabel = time
