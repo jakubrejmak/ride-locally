@@ -171,38 +171,3 @@ export const addressesMetricsTable = pgTable("addresses_metrics", {
     .notNull(),
   click_time: timestamp().notNull(),
 });
-
-// scraper tables
-export const scrapeStatusEnum = pgEnum("scrape_status", ["pending", "running", "success", "failed"]);
-
-export const ttScrTargetsTable = pgTable("tt_scr_targets", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  name: varchar({ length: 255 }).notNull(),
-  url: varchar().notNull(),
-  config: jsonb().notNull(),
-  schedule_cron: varchar({ length: 100 }),
-  is_active: boolean().notNull().default(true),
-  carrier_id: integer().notNull().references(() => carriersTable.id, { onDelete: "cascade" }),
-  created_at: timestamp().notNull().defaultNow(),
-  updated_at: timestamp().notNull().defaultNow().$onUpdate(() => new Date()),
-});
-
-export const ttScrRunsTable = pgTable("tt_scr_runs", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  target_id: integer().notNull().references(() => ttScrTargetsTable.id, { onDelete: "cascade" }),
-  status: scrapeStatusEnum("status").notNull().default("pending"),
-  o_filepath: varchar(),
-  error_message: varchar(),
-  started_at: timestamp(),
-  finished_at: timestamp(),
-  created_at: timestamp().notNull().defaultNow(),
-});
-
-export const ttScrProcessedTable = pgTable("tt_scr_processed", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  run_id: integer().notNull().references(() => ttScrRunsTable.id, { onDelete: "cascade" }),
-  target_id: integer().notNull().references(() => ttScrTargetsTable.id, { onDelete: "cascade" }),
-  o_filepath: varchar().notNull(),
-  version: integer().notNull().default(1),
-  created_at: timestamp().notNull().defaultNow(),
-});
