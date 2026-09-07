@@ -1,15 +1,16 @@
 import {
-  integer,
-  pgEnum,
-  pgTable,
-  varchar,
-  customType,
-  timestamp,
   boolean,
   date,
+  geometry,
+  index,
+  integer,
   jsonb,
+  pgEnum,
+  pgTable,
   time,
+  timestamp,
   unique,
+  varchar,
 } from "drizzle-orm/pg-core";
 
 export const routeTypeEnum = pgEnum("route_type", [
@@ -25,12 +26,6 @@ export const routeTypeEnum = pgEnum("route_type", [
 
 export const exceptionTypeEnum = pgEnum("exception_type", ["added", "removed"]);
 
-export const geographyPoint = customType<{ data: unknown }>({
-  dataType() {
-    return 'geography(Point,4326)';
-  },
-});
-
 export const carriersTable = pgTable("carriers", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   name: varchar().notNull(),
@@ -41,11 +36,19 @@ export const carriersTable = pgTable("carriers", {
   country: varchar({ length: 2 }).notNull(),
 });
 
-export const stopsTable = pgTable("stops", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  name: varchar().notNull(),
-  coordinates: geographyPoint("coordinates").notNull(),
-});
+export const stopsTable = pgTable(
+  "stops",
+  {
+    id: integer().primaryKey().generatedAlwaysAsIdentity(),
+    name: varchar().notNull(),
+    coordinates: geometry("coordinates", {
+      type: "point",
+      mode: "xy",
+      srid: 4326,
+    }),
+  },
+  (t) => [index("stops_spatial_idx").using("gist", t.coordinates)],
+);
 
 export const routesTable = pgTable("routes", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -75,20 +78,22 @@ export const calendarTable = pgTable("calendar", {
   friday: boolean().notNull().default(false),
   saturday: boolean().notNull().default(false),
   sunday: boolean().notNull().default(false),
-  start_date: date().notNull(),
-  end_date: date().notNull(),
+  start_date: date(),
+  end_date: date(),
 });
 
-export const calendarDatesTable = pgTable("calendar_dates", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  calendar_id: integer()
-    .references(() => calendarTable.id, { onDelete: "cascade" })
-    .notNull(),
-  date: date().notNull(),
-  exception_type: exceptionTypeEnum("exception_type").notNull(),
-}, (t) => [
-  unique().on(t.calendar_id, t.date),
-]);
+export const calendarDatesTable = pgTable(
+  "calendar_dates",
+  {
+    id: integer().primaryKey().generatedAlwaysAsIdentity(),
+    calendar_id: integer()
+      .references(() => calendarTable.id, { onDelete: "cascade" })
+      .notNull(),
+    date: date().notNull(),
+    exception_type: exceptionTypeEnum("exception_type").notNull(),
+  },
+  (t) => [unique().on(t.calendar_id, t.date)],
+);
 
 export const tripsTable = pgTable("trips", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -111,20 +116,22 @@ export const fareAttributesTable = pgTable("fare_attributes", {
   currency: varchar({ length: 3 }).notNull(),
 });
 
-export const tripStopsTable = pgTable("trip_stops", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  trip_id: integer()
-    .references(() => tripsTable.id, { onDelete: "cascade" })
-    .notNull(),
-  stop_id: integer()
-    .references(() => stopsTable.id, { onDelete: "restrict" })
-    .notNull(),
-  stop_order: integer().notNull(),
-  arrival_time: time().notNull(),
-  departure_time: time().notNull(),
-}, (t) => [
-  unique().on(t.trip_id, t.stop_order),
-]);
+export const tripStopsTable = pgTable(
+  "trip_stops",
+  {
+    id: integer().primaryKey().generatedAlwaysAsIdentity(),
+    trip_id: integer()
+      .references(() => tripsTable.id, { onDelete: "cascade" })
+      .notNull(),
+    stop_id: integer()
+      .references(() => stopsTable.id, { onDelete: "restrict" })
+      .notNull(),
+    stop_order: integer().notNull(),
+    arrival_time: time().notNull(),
+    departure_time: time().notNull(),
+  },
+  (t) => [unique().on(t.trip_id, t.stop_order)],
+);
 
 export const stopsMetricsTable = pgTable("stops_metrics", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -135,34 +142,44 @@ export const stopsMetricsTable = pgTable("stops_metrics", {
 });
 
 export const addressProviderEnum = pgEnum("address_provider", [
-    "osm",
-    "google",
-    "here",
-    "mapbox",
+  "osm",
+  "google",
+  "here",
+  "mapbox",
 ]);
 
-export const addressesTable = pgTable("addresses", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  display_name: varchar().notNull(),
-  street: varchar({ length: 255 }),
-  house_number: varchar({ length: 20 }),
-  city: varchar({ length: 100 }),
-  postcode: varchar({ length: 20 }),
-  country: varchar({ length: 2 }),
-  coordinates: geographyPoint("coordinates").notNull(),
-});
+export const addressesTable = pgTable(
+  "addresses",
+  {
+    id: integer().primaryKey().generatedAlwaysAsIdentity(),
+    display_name: varchar().notNull(),
+    street: varchar({ length: 255 }),
+    house_number: varchar({ length: 20 }),
+    city: varchar({ length: 100 }),
+    postcode: varchar({ length: 20 }),
+    country: varchar({ length: 2 }),
+    coordinates: geometry("coordinates", {
+      type: "point",
+      mode: "xy",
+      srid: 4326,
+    }),
+  },
+  (t) => [index("addresses_spatial_idx").using("gist", t.coordinates)],
+);
 
-export const addressesRawTable = pgTable("addresses_raw", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  address_id: integer()
-    .references(() => addressesTable.id, { onDelete: "cascade" })
-    .notNull(),
-  raw: jsonb("raw").notNull(),
-  provider: addressProviderEnum("provider").notNull(),
-  external_id: varchar({ length: 255 }),
-}, (t) => [
-  unique().on(t.provider, t.external_id),
-]);
+export const addressesRawTable = pgTable(
+  "addresses_raw",
+  {
+    id: integer().primaryKey().generatedAlwaysAsIdentity(),
+    address_id: integer()
+      .references(() => addressesTable.id, { onDelete: "cascade" })
+      .notNull(),
+    raw: jsonb("raw").notNull(),
+    provider: addressProviderEnum("provider").notNull(),
+    external_id: varchar({ length: 255 }),
+  },
+  (t) => [unique().on(t.provider, t.external_id)],
+);
 
 export const addressesMetricsTable = pgTable("addresses_metrics", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -170,4 +187,22 @@ export const addressesMetricsTable = pgTable("addresses_metrics", {
     .references(() => addressesTable.id, { onDelete: "cascade" })
     .notNull(),
   click_time: timestamp().notNull(),
+});
+
+export const userRoleEnum = pgEnum("user_role", [
+  "sys_superuser",
+  "sys_admin",
+  "sys_moderator",
+  "sub_default",
+  "sub_premium",
+]);
+
+export const usersTable = pgTable("web_users", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  username: varchar(),
+  email: varchar(),
+  password_hash: varchar().notNull(),
+  role: userRoleEnum(),
+  last_logged_in: timestamp(),
+  premium_expires: timestamp(),
 });

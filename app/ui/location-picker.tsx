@@ -18,7 +18,7 @@ import {
   getAddressesPopular,
   searchStops,
   searchAddresses,
-} from "@/app/data/queries";
+} from "@/app/data/ui-queries";
 import { InferSelectModel } from "drizzle-orm";
 import { stopsTable, addressesTable } from "@/app/db/schema";
 import { PointGeo } from "../lib/locations";
